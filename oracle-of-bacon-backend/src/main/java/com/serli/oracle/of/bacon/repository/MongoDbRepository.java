@@ -8,6 +8,8 @@ import org.bson.Document;
 
 import java.util.Optional;
 
+import static com.mongodb.client.model.Filters.eq;
+
 public class MongoDbRepository {
 
     private final MongoClient mongoClient;
@@ -17,7 +19,14 @@ public class MongoDbRepository {
     }
 
     public Optional<Document> getActorByName(String name) {
-        // TODO implement actor fetch
-        return null;
+        MongoDatabase mongoDatabase = mongoClient.getDatabase("test");
+        MongoCollection mongoCollection = mongoDatabase.getCollection("actors");
+        MongoCursor<Document> mongoCursor = mongoCollection.find(eq("name:ID", name)).iterator();
+
+        if (mongoCursor.hasNext()) {
+            Document actor = mongoCursor.next();
+            return Optional.of(actor);
+        }
+        return Optional.empty();
     }
 }
