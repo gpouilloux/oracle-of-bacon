@@ -52,7 +52,7 @@ public class ElasticSearchRepository {
             SearchResult result = jestClient.execute(search);
             result.getJsonObject().get("hits").getAsJsonObject().get("hits")
                     .getAsJsonArray().forEach(jsonElement -> {
-                list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").toString());
+                list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").getAsString());
             });
         } catch (IOException e) {
             e.printStackTrace();
