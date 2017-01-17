@@ -1,10 +1,7 @@
 package com.serli.oracle.of.bacon.repository;
 
 
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.*;
 
 import java.util.List;
 
@@ -13,14 +10,17 @@ public class Neo4JRepository {
     private final Driver driver;
 
     public Neo4JRepository() {
-        driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "password"));
+        driver = GraphDatabase.driver("http://localhost:7474", AuthTokens.basic("neo4j", "root"));
     }
 
     public List<?> getConnectionsToKevinBacon(String actorName) {
         Session session = driver.session();
 
-        // TODO implement Oracle of Bacon
-        return null;
+        StatementResult result = session.run("MATCH (cs { name: 'Bacon, Kevin (I)' }),(ms { name: '" + actorName + "' }), " +
+                "p = shortestPath((cs)-[*]-(ms)) " +
+                "WITH p WHERE length(p) > 1 RETURN p");
+
+        return result.list();
     }
 
     private static abstract class GraphItem {

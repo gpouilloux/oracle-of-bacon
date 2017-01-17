@@ -2,6 +2,8 @@ package com.serli.oracle.of.bacon.loader.elasticsearch;
 
 import com.serli.oracle.of.bacon.repository.ElasticSearchRepository;
 import io.searchbox.client.JestClient;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,11 +25,20 @@ public class CompletionLoader {
         JestClient client = ElasticSearchRepository.createClient();
 
         try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(inputFilePath))) {
+            Bulk.Builder builder = new Bulk.Builder().defaultIndex("movies").defaultType("actor");
             bufferedReader.lines()
                     .forEach(line -> {
-                        //TODO ElasticSearch insert
-                        System.out.println(line);
+                        count.incrementAndGet();
+                        String source = "{\"name\":" + line + "}";
+                        Index index = new Index.Builder(source).build();
+                        builder.addAction(index);
+//                        System.out.println(line);
                     });
+            try {
+                client.execute(builder.build());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         System.out.println("Inserted total of " + count.get() + " actors");
