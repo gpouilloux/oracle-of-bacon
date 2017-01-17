@@ -49,10 +49,15 @@ public class APIEndPoint {
     private String stringifyRelationship(Relationship relationship) {
         String content = "{\"data\":{";
 
+        if (relationship.type() == null) {
+            content += "\"target\":" + relationship.get("source") + ",";
+            content += "\"source\":" + relationship.get("target") + ",";
+        } else {
+            content += "\"source\":" + relationship.get("source") + ",";
+            content += "\"target\":" + relationship.get("target") + ",";
+        }
         content += "\"id\":" + relationship.id() + ",";
-        content += "\"source\":" + relationship.get("source") + ",";
-        content += "\"target\":" + relationship.get("target") + ",";
-        content += "\"value\":" + relationship.type() + ",";
+        content += "\"value\":\"PLAYED_IN\",";
 
         content += "}}";
         return content;
