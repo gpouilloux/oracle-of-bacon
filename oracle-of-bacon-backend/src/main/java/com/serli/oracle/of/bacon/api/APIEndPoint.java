@@ -50,14 +50,14 @@ public class APIEndPoint {
         String content = "{\"data\":{";
 
         if (relationship.type() == null) {
-            content += "\"target\":" + relationship.get("source") + ",";
-            content += "\"source\":" + relationship.get("target") + ",";
+            content += "\"target\":" + relationship.startNodeId() + ",";
+            content += "\"source\":" + relationship.endNodeId() + ",";
         } else {
-            content += "\"source\":" + relationship.get("source") + ",";
-            content += "\"target\":" + relationship.get("target") + ",";
+            content += "\"source\":" + relationship.startNodeId() + ",";
+            content += "\"target\":" + relationship.endNodeId() + ",";
         }
         content += "\"id\":" + relationship.id() + ",";
-        content += "\"value\":\"PLAYED_IN\",";
+        content += "\"value\":\"PLAYED_IN\"";
 
         content += "}}";
         return content;
@@ -67,8 +67,20 @@ public class APIEndPoint {
         String content = "{\"data\":{";
         content += "\"id\":" + node.id() + ",";
         Iterator<String> str = node.labels().iterator();
-        content += "\"type\":" + str.next() + ",";
-        content += "\"value\":" + node.get("name");
+        String nodeType = str.next();
+        String nodeValue = "";
+        switch (nodeType) {
+            case "Movie":
+                nodeValue = node.get("title").asString();
+                break;
+            case "Actor":
+                nodeValue = node.get("name").asString();
+                break;
+            default:
+                break;
+        }
+        content += "\"type\":\"" + nodeType + "\",";
+        content += "\"value\":\"" + nodeValue + "\"";
         content += "}}";
 
         return content;
