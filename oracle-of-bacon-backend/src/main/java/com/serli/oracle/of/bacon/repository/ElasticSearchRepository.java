@@ -1,5 +1,6 @@
 package com.serli.oracle.of.bacon.repository;
 
+import com.google.gson.JsonElement;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
@@ -31,12 +32,13 @@ public class ElasticSearchRepository {
         return jestClient;
     }
 
-    public List<String> getActorsSuggests(String searchQuery) throws IOException {
+    public static List<String> getActorsSuggests(String searchQuery) throws IOException {
         String query = "{\n" +
+                "    \"size\": 5,\n" +
                 "    \"query\": {\n" +
                 "            \"match\" : {\n" +
-                "                    \"name\" : \"*evi*\"\n" +
-                "            },\n" +
+                "                    \"name\" : \"*" + searchQuery + "*\"\n" +
+                "            }\n" +
                 "    }\n" +
                 "}";
 
@@ -44,15 +46,13 @@ public class ElasticSearchRepository {
                 .addIndex("movies")
                 .addType("actor")
                 .build();
-
+        JestClient jestClient = createClient();
         SearchResult result = jestClient.execute(search);
-        List<SearchResult.Hit<String, Void>> hits = result.getHits(String.class);
         ArrayList<String> list = new ArrayList<>();
-        hits.forEach(element -> {
-            
+        result.getJsonObject().get("hits").getAsJsonObject().get("hits")
+        .getAsJsonArray().forEach(jsonElement -> {
+            list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").toString());
         });
         return list;
     }
-
-
 }
