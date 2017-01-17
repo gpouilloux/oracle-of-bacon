@@ -32,7 +32,7 @@ public class ElasticSearchRepository {
         return jestClient;
     }
 
-    public static List<String> getActorsSuggests(String searchQuery) throws IOException {
+    public List<String> getActorsSuggests(String searchQuery) {
         String query = "{\n" +
                 "    \"size\": 5,\n" +
                 "    \"query\": {\n" +
@@ -46,13 +46,18 @@ public class ElasticSearchRepository {
                 .addIndex("movies")
                 .addType("actor")
                 .build();
-        JestClient jestClient = createClient();
-        SearchResult result = jestClient.execute(search);
+
         ArrayList<String> list = new ArrayList<>();
-        result.getJsonObject().get("hits").getAsJsonObject().get("hits")
-        .getAsJsonArray().forEach(jsonElement -> {
-            list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").toString());
-        });
+        try {
+            SearchResult result = jestClient.execute(search);
+            result.getJsonObject().get("hits").getAsJsonObject().get("hits")
+                    .getAsJsonArray().forEach(jsonElement -> {
+                list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").toString());
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 }

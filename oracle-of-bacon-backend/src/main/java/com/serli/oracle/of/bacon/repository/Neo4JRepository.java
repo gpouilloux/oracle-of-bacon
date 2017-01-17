@@ -10,7 +10,7 @@ public class Neo4JRepository {
     private final Driver driver;
 
     public Neo4JRepository() {
-        driver = GraphDatabase.driver("http://localhost:7474", AuthTokens.basic("neo4j", "root"));
+        driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "root"));
     }
 
     public List<?> getConnectionsToKevinBacon(String actorName) {
