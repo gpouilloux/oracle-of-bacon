@@ -67,7 +67,7 @@ public class APIEndPoint {
         String content = "{\"data\":{";
         content += "\"id\":" + node.id() + ",";
         Iterator<String> str = node.labels().iterator();
-        content += "\"type\":" + str.next() + ",";
+        content += "\"type\":\"" + str.next() + "\",";
         content += "\"value\":" + node.get("name");
         content += "}}";
 
