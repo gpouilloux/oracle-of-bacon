@@ -1,4 +1,4 @@
-# Orcacle of Bacon
+# Oracle of Bacon
 
 ## Présentation
 
