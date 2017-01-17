@@ -20,5 +20,6 @@ public class RedisRepository {
 
     public void appendActorSearch(String searchActor) {
         driver.lpush(SEARCH_ACTOR_KEY, searchActor);
+        driver.ltrim(SEARCH_ACTOR_KEY, 0, 9);
     }
 }
