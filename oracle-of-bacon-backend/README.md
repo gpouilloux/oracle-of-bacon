@@ -11,3 +11,8 @@ To build :
 ```
 
 To Run, execute class *com.serli.oracle.of.bacon.Application*.
+
+## Neo4J import
+
+neo4j-import --into imdb.db --nodes:Movie movies.csv --nodes:Actor actors.csv --relationships roles.csv 
+
