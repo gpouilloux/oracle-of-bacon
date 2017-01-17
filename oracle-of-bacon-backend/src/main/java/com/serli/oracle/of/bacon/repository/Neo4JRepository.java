@@ -1,8 +1,14 @@
 package com.serli.oracle.of.bacon.repository;
 
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.neo4j.driver.v1.*;
+import org.neo4j.driver.v1.types.Path;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,14 +19,23 @@ public class Neo4JRepository {
         driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "root"));
     }
 
-    public List<?> getConnectionsToKevinBacon(String actorName) {
+    public List<Path> getConnectionsToKevinBacon(String actorName) {
         Session session = driver.session();
 
         StatementResult result = session.run("MATCH (cs { name: 'Bacon, Kevin (I)' }),(ms { name: '" + actorName + "' }), " +
                 "p = shortestPath((cs)-[*]-(ms)) " +
                 "WITH p WHERE length(p) > 1 RETURN p");
 
-        return result.list();
+        ArrayList<Path> list = new ArrayList<>();
+
+        while (result.hasNext()) {
+            Record record = result.next();
+            record.values().forEach(value -> {
+                list.add(value.asPath());
+            });
+        }
+
+        return list;
     }
 
     private static abstract class GraphItem {
