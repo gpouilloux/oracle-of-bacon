@@ -12,6 +12,7 @@ import io.searchbox.core.SuggestResult;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ElasticSearchRepository {
 
@@ -37,13 +38,12 @@ public class ElasticSearchRepository {
     public List<String> getActorsSuggests(String suggestQuery) {
         String query = "{\n" +
                 "\"actor-suggestion\": {\n" +
-	                "    \"text\":\"" + suggestQuery + "\"\n" +
+	                "    \"text\":\"" + suggestQuery + "\",\n" +
 		            "    \"term\": {\n" +
 		            "       \"field\": \"name\"\n" +
 		            "       }\n" +
 	                "    }\n" +
-                    "}" +
-		        "}";
+                    "}";
 
 	    Suggest suggest = new Suggest.Builder(query)
 			    .addIndex("movies")
@@ -54,10 +54,14 @@ public class ElasticSearchRepository {
 	    ArrayList<String> list = new ArrayList<>();
         try {
             SuggestResult result = jestClient.execute(suggest);
-            result.getJsonObject().get("hits").getAsJsonObject().get("hits")
-                    .getAsJsonArray().forEach(jsonElement -> {
-                list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").getAsString());
-            });
+	        return result.getSuggestions("actor-suggestion")
+			        .stream()
+			        .map(s -> s.text)
+			        .collect(Collectors.toList());
+//            result.getJsonObject().get("hits").getAsJsonObject().get("hits")
+//                    .getAsJsonArray().forEach(jsonElement -> {
+//                list.add(jsonElement.getAsJsonObject().get("_source").getAsJsonObject().get("name").getAsString());
+//            });
         } catch (IOException e) {
             e.printStackTrace();
         }

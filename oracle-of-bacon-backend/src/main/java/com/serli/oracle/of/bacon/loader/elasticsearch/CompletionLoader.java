@@ -29,7 +29,7 @@ public class CompletionLoader {
             bufferedReader.lines()
                     .forEach(line -> {
                         count.incrementAndGet();
-                        String source = "{\"name\":" + line + "}";
+                        String source = "{\"name\":" + line + ", {\"suggest\": {\"input\": [" + line + "], \"output\":" + line + " }}}";
                         Index index = new Index.Builder(source).build();
                         builder.addAction(index);
 //                        System.out.println(line);
